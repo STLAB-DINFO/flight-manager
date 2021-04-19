@@ -1,0 +1,187 @@
+<f:view
+		xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:t="http://myfaces.apache.org/tomahawk"
+		xmlns:p="http://primefaces.org/ui"
+		xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+		xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+	<h:head />
+
+	<ui:composition template="layout/template.xhtml">
+		<ui:define name="body">
+
+			<link rel="stylesheet" href="css/FM-index.css" />
+
+			<f:event type="preRenderView" listener="#{loggedUserComponent.checkNotLoggedin()}" />
+
+			<h:panelGroup rendered="#{loggedUserComponent.isLoggedIn()}">
+
+				<h2>Insert flights</h2>
+				<center>
+					<h4 style="color: red">#{flightController.error}</h4>
+
+					<div style="float: right">
+						<h:form>
+							<h:button styleClass="btn btn-primary" outcome="flights-list.xhtml" value="Show flights"></h:button>
+							<h:commandButton action="#{flightController.stopConversationAndReturnHome()}" value="Home" styleClass="btn btn-warning" style="margin-left: 10px;"></h:commandButton>
+						</h:form>
+					</div>
+
+					<h:form id="form" style="max-width: 900px;">
+						<table>
+							<tr style="font-weight: bold">
+								<td>Flight number</td>
+								<td>Date</td>
+								<td>Departure time (HH:MM)</td>
+								<td>Flight duration (minutes)</td>
+								<td>Passengers</td>
+								<td>Price per person (€)</td>
+								<!--<td>Repeat for (days)</td>-->
+							</tr>
+							<tr>
+								<td><h:inputText id="flight-number" value="#{flightController.flight.flightNumber}" a:placeholder="F1234"></h:inputText></td>
+								<td style="width: 130px; padding-top: 0 !important; padding-bottom: 14px !important;"><p:calendar id="departure-date" value="#{flightController.flight.departureDate}"></p:calendar></td>
+								<td><h:inputText id="departure-time" value="#{flightController.flight.departureTime}" a:placeholder="17:55">
+									<f:convertDateTime pattern="HH:mm" />
+								</h:inputText>
+								</td>
+								<td><h:inputText id="duration" value="#{flightController.flight.flightDuration}"></h:inputText></td>
+								<td><h:inputText id="passengers" value="#{flightController.flight.totalSeats}"></h:inputText></td>
+								<td><h:inputText id="price" value="#{flightController.flight.pricePerPerson}"></h:inputText></td>
+<!--								<td>
+									<h:selectOneMenu id="repeats" value="#{insertFlightController.repeats}" >
+										<f:selectItems value="#{insertFlightController.listRepeats}" var="number" itemLabel="#{number.intValue()}" />
+									</h:selectOneMenu>
+								</td>-->
+							</tr>
+						</table>
+						<table>
+							<tr>
+								<td><h4 style="width: 100px;">From:</h4></td>
+								<td style="width: 34%">
+									<h:selectOneMenu id="source" value="#{flightController.sourceAirportId}">
+										<f:selectItems value="#{flightController.airports}" var="airport" itemLabel="#{airport.cityName}" itemValue="#{airport.id}" />
+									</h:selectOneMenu>
+								</td>
+								<td><h4 style="width: 100px; margin-left: 40px;">To:</h4></td>
+								<td style="width: 34%"><h:selectOneMenu id="destination" value="#{flightController.destinationAirportId}">
+									<f:selectItems value="#{flightController.airports}" var="airport" itemLabel="#{airport.cityName}" itemValue="#{airport.id}" />
+								</h:selectOneMenu>
+								</td>
+							</tr>
+						</table>
+
+						<h:commandButton styleClass="btn btn-success" onclick="return checkData()" action="#{flightController.saveInfoAndNext()}" value="Next" style="margin-top:20px;"/> <!--action="#{insertFlightController.saveFlight()}"-->
+					</h:form>
+				</center>
+
+				<script type="text/javascript">
+					function checkData(){
+						if(document.getElementById('form:flight-number').value == ""){
+							alert("Incorrect data entered");
+							return false;
+						}
+						var val = document.getElementById('form:departure-time').value;
+						var reg = /(0[0-9]|1[0-9]|2[0-3])[:]([0-5][0-9])/;
+						if(!val.match(reg)){
+							alert('Format error in "Departure time" field');
+							return false;
+						}
+
+						/*sourceAirRadio = document.getElementById('flightOutExisting');
+						destinationAirRadio = document.getElementById('flightBackExisting');
+						sourceAirport = document.getElementById('form:sourceAirport');
+						destinationAirport = document.getElementById('form:destinationAirport');*/
+
+						if(document.getElementById('form:source').value == document.getElementById('form:destination').value /* &amp;&amp; sourceAirRadio.checked &amp;&amp; destinationAirRadio.checked  */){
+							alert("Source and destination can not be equals");
+							return false;
+						}
+
+						/*if(sourceAirRadio.checked)
+							sourceAirport.value = "existing";
+						else{
+							sourceAirport.value = "new";
+							if(document.getElementById('form:sourceName').value == ""){
+								alert("Insert a valid source airport name");
+								return false;
+							}
+							var zip = document.getElementById('form:sourceZip').value;
+							if(zip == "" || zip != parseInt(zip, 10)){
+								alert("The source airport ZIP code must be a number");
+								return false;
+							}
+							if(document.getElementById('form:sourceGmt').value == ""){
+								document.getElementById('form:sourceGmt').value = "0";
+							}
+						}
+
+						if(destinationAirRadio.checked)
+							destinationAirport.value = "existing";
+						else{
+							destinationAirport.value = "new";
+							if(document.getElementById('form:destinationName').value == ""){
+								alert("Insert a valid destination airport name");
+								return false;
+							}
+							var zip = document.getElementById('form:destinationZip').value;
+							if(zip == "" || zip != parseInt(zip, 10)){
+								alert("The destination airport ZIP code must be a number");
+								return false;
+							}
+							if(document.getElementById('form:destinationGmt').value == ""){
+								document.getElementById('form:destinationGmt').value = "0";
+							}
+						}
+						*/
+						return true;
+					}
+
+					function showHideSource(value) {
+						elementName = document.getElementById("form:sourceName");
+						elementZip = document.getElementById("form:sourceZip");
+						elementGmt = document.getElementById("form:sourceGmt");
+						element = document.getElementById("form:source");
+						if(value == "new"){
+							elementName.style.display = 'block';
+							elementZip.style.display = 'block';
+							elementGmt.style.display = 'block';
+							element.style.display = 'none';
+							elementName.value="";
+							elementZip.value="";
+							elementGmt.value="";
+						}else{
+							elementName.style.display = 'none';
+							elementZip.style.display = 'none';
+							elementGmt.style.display = 'none';
+							element.style.display = 'block';
+						}
+					}
+					function showHideDestination(value) {
+						elementName = document.getElementById("form:destinationName");
+						elementZip = document.getElementById("form:destinationZip");
+						elementGmt = document.getElementById("form:destinationGmt");
+						element = document.getElementById("form:destination");
+						if(value == "new"){
+							elementName.style.display = 'block';
+							elementZip.style.display = 'block';
+							elementGmt.style.display = 'block';
+							element.style.display = 'none';
+							elementName.value="";
+							elementZip.value="";
+							elementGmt.value="";
+						}else{
+							elementName.style.display = 'none';
+							elementZip.style.display = 'none';
+							elementGmt.style.display = 'none';
+							element.style.display = 'block';
+						}
+					}
+				</script>
+			</h:panelGroup>
+		</ui:define>
+	</ui:composition>
+</f:view>

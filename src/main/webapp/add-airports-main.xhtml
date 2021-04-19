@@ -1,0 +1,102 @@
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+	<h:head />
+
+	<ui:composition template="layout/template.xhtml">
+		<ui:define name="body">
+
+			<link rel="stylesheet" href="css/FM-index.css" />
+
+			<f:event type="preRenderView"
+				listener="#{loggedUserComponent.checkNotLoggedin()}" />
+
+			<h:panelGroup rendered="#{loggedUserComponent.isAdmin()}">
+
+				<h2>Insert Airport</h2>
+				<center>
+					<h4 style="color: red">#{flightController.error}</h4>
+
+					<div style="float: right">
+						<h:form rendered="#{loggedUserComponent.loggedIn}">
+							<!-- 							<h:button styleClass="btn btn-primary" outcome="index.xhtml"
+								value="Show airports"></h:button>
+ -->
+							<h:commandButton
+								action="#{airportController.stopConversationAndReturnHome()}"
+								value="Home" styleClass="btn btn-warning"
+								style="margin-left: 10px;"></h:commandButton>
+						</h:form>
+						<!--<h:commandButton class="btn btn-warning" action="#{insertFlightController.startAndOpen()}" value="Flights" style="margin-left: 10px;"></h:commandButton>-->
+					</div>
+
+					<h:form id="form" style="max-width: 600px;">
+						<table>
+
+							<tr style="margin: 0">
+								<td style="width: 50%; margin-bottom: 0"><h:panelGrid
+										columns="2" columnClasses="noborder, noborder">
+										<h:outputLabel value="Country" />
+										<h:selectOneMenu value="#{airportController.airport.airportCountry}"
+											converter="#{countryConverter}" var="c" >
+											<f:selectItems value="#{airportController.countryList}"
+												var="country" itemLabel="#{country.name}"
+												itemValue="#{country}" />
+										</h:selectOneMenu>
+									</h:panelGrid></td>
+							</tr>
+
+							<tr>
+								<td>Airport City</td>
+								<td><h:inputText style="font-weight: bold" id="airPortName"
+										value="#{airportController.airport.cityName}"> Airport name </h:inputText>
+								</td>
+							</tr>
+							<tr>
+								<td>Airport full name</td>
+								<td><h:inputText style="font-weight: bold" id="airPortCity"
+										value="#{airportController.airport.airportFullName}"> Airport name </h:inputText>
+								</td>
+							</tr>
+							<tr>
+								<td>Airport GMT</td>
+								<td><h:selectOneMenu style="width: 30%" id="airPortGmt"
+										value="#{airportController.airport.GMT}" a:placeholder="GMT">
+										<f:selectItem itemLabel="GMT" itemDisabled="true" />
+										<c:forEach var="i" begin="0" end="24">
+											<f:selectItem itemValue="${i-12}" itemLabel="${i-12}" />
+										</c:forEach>
+									</h:selectOneMenu></td>
+
+							</tr>
+							<tr>
+								<td>ZIP code</td>
+								<td><h:inputText style="font-weight: bold; width: 34%"
+										id="airPortZIP" value="#{airportController.airport.ZIP}">
+									</h:inputText></td>
+							</tr>
+
+						</table>
+
+
+						<h:commandButton styleClass="btn btn-success"
+							onclick="return checkData()" value="Next"
+							action="add-airports-details" />
+					</h:form>
+				</center>
+
+				<script type="text/javascript">
+					function checkData() {
+						return true;
+					}
+				</script>
+			</h:panelGroup>
+		</ui:define>
+	</ui:composition>
+</f:view>

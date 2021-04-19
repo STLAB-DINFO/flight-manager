@@ -1,0 +1,106 @@
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+
+	<h:head />
+
+	<ui:composition template="layout/template.xhtml">
+		<ui:define name="body">
+
+			<link rel="stylesheet" href="css/FM-index.css" />
+
+			<f:event type="preRenderView"
+				listener="#{loggedUserComponent.checkNotLoggedin()}" />
+
+			<h:panelGroup rendered="#{loggedUserComponent.isRegisteredUser()}">
+
+				<h2>Show Bookings</h2>
+
+				<center>
+					<h:form id="form" style="max-width: 950px;">
+						<h:panelGroup
+							rendered="#{!editBookingController.bookingList.isEmpty()}">
+							<table style="border: 2px; border-style: outset" id="bookings">
+								<tr style="font-weight: bold">
+									<td style="padding-left: 15px; width: 25%">Date</td>
+									<td>From</td>
+									<td>Duration</td>
+									<td>To</td>
+									<td>Passengers</td>
+									<td>Price</td>
+								</tr>
+								<ui:repeat var="booking"
+									value="#{editBookingController.bookingList}">
+									<tr>
+										<td><h5>#{util.getOnlyDate(booking.flights[0].departureDate)}</h5></td>
+
+										<td style="width: 25%; padding-left: 15px"><h4
+												style="margin-bottom: 2px;">
+												#{booking.flights[0].sourceAirport.cityName} - <b>#{util.getOnlyHoursAndMinutes(booking.flights[0].departureTime)}</b>
+											</h4> <h:panelGroup
+												rendered="#{booking.flights[0].sourceAirport.GMT > 0}">
+												<i style="font-size: 18px; float: right;">GMT:
+													+#{booking.flights[0].sourceAirport.GMT}</i>
+											</h:panelGroup> <h:panelGroup
+												rendered="#{1 > booking.flights[0].sourceAirport.GMT}">
+												<i style="font-size: 18px; float: right;">GMT:
+													#{booking.flights[0].sourceAirport.GMT}</i>
+											</h:panelGroup></td>
+
+										<td><h5>#{util.getOnlyHoursAndMinutes(booking.flights[0].flightDuration)}</h5></td>
+
+										<td style="width: 25%"><h4 style="margin-bottom: 2px;">
+												#{booking.flights[0].destinationAirport.cityName} - <b>#{util.getArrivalTime(booking.flights[0])}</b>
+											</h4> <h:panelGroup
+												rendered="#{booking.flights[0].destinationAirport.GMT > 0}">
+												<i style="font-size: 18px; float: right;">GMT:
+													+#{booking.flights[0].destinationAirport.GMT}</i>
+											</h:panelGroup> <h:panelGroup
+												rendered="#{1 > booking.flights[0].destinationAirport.GMT}">
+												<i style="font-size: 18px; float: right;">GMT:
+													#{booking.flights[0].destinationAirport.GMT}</i>
+											</h:panelGroup></td>
+
+										<td><h4>#{booking.passengers.size()}</h4></td>
+
+										<td><h4>#{booking.finalPrice}</h4></td>
+
+										<td><h:commandButton class="btn btn-primary"
+												value="Details"
+												action="#{editBookingController.viewBooking(booking)}"></h:commandButton>
+										</td>
+										<!-- 										<td><h:outputText name="price"
+												value="#{booking.finalPrice}"></h:outputText></td>
+ -->
+										<!-- 										<td><h:outputText name="from"
+												value="#{booking.flights[0].sourceAirport}"></h:outputText></td>
+ -->
+										<!-- 										<td><h:outputText name="duration"
+												value="#{booking.flights[0].flightDuration}"></h:outputText></td>
+ -->
+										<!-- 										<td><h:outputText name="to"
+												value="#{booking.flights[0].destinationAirport}"></h:outputText></td>
+ -->
+										<!-- 										<td><h:outputText name="passengers"
+												value="#{booking.passengers.size()}"></h:outputText></td>
+ -->
+									</tr>
+								</ui:repeat>
+							</table>
+						</h:panelGroup>
+					</h:form>
+					<h:form>
+						<h:commandButton styleClass="btn btn-warning"
+							action="#{searchFlightsController.redirectToHome('')}"
+							value="Back to home" />
+					</h:form>
+				</center>
+
+			</h:panelGroup>
+		</ui:define>
+	</ui:composition>
+</f:view>

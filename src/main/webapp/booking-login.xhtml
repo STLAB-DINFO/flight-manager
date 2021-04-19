@@ -1,0 +1,38 @@
+<f:view
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:t="http://myfaces.apache.org/tomahawk"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+	
+    <h:head />
+	
+  <ui:composition template="layout/template.xhtml">
+	<ui:define name="body">
+		
+		<link rel="stylesheet" href="css/FM-index.css" />
+		
+		<f:event type="preRenderView" listener="#{bookingSessionComponent.checkLoggedin()}" />
+		
+		<h:panelGroup rendered="#{!bookingSessionComponent.isLoggedIn()}">
+			<h2>My booking login</h2>
+		
+			<h:form>
+				<center>
+					<h4 style="color: red">#{bookingLoginController.error}</h4>
+					<label for="reservationId">Reservation ID</label>
+					<h:inputText id="reservationId" a:placeholder="Insert booking ID" value="#{bookingLoginController.bookingData.reservationId}" style="width: 350px;"></h:inputText>
+					<label for="email">Email</label>
+					<h:inputText id="email" a:placeholder="Insert email" value="#{bookingLoginController.bookingData.email}" style="width: 350px;"></h:inputText><br/>
+					<h:button styleClass="btn btn-danger" outcome="index.xhtml" value="Back to home" />
+					<h:commandButton styleClass="btn btn-success" action="#{bookingLoginController.login()}" value="Enter" style="margin-left: 20px;">
+						<f:ajax onevent="click" execute="#{loginController.unsetLogin()}"></f:ajax>
+					</h:commandButton>
+				</center>
+			</h:form>
+		</h:panelGroup>		
+	</ui:define>
+   </ui:composition>
+</f:view>
