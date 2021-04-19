@@ -9,5 +9,5 @@ The platform has been designed to cover functional requirements of three  user c
 
 Flight Manager has been designed as a classical 3-tier stateful architecture developed through the Java Enterprise Edition (JEE) ecosystem, exploiting following specifications:
 - JavaServer Faces (JSF);
-- Contexts and Dependency Injection} (CDI);
-- Java Persistence API} (JPA).
+- Contexts and Dependency Injection (CDI);
+- Java Persistence API (JPA).
